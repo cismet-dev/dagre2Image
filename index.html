@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="http://dagrejs.github.io/project/graphlib-dot/latest/graphlib-dot.min.js"></script>
+    <script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/save-svg-as-png/1.4.17/saveSvgAsPng.js"></script>
+
+    <style>
+html, body {
+  height: 100%;
+  margin: 0px;
+}
+#form {  
+  margin: 10px;
+  padding: 10px;
+  padding-top: 0px;
+  background-color: white;
+  border: black 1px solid;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+svg {
+  margin: 0px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.node {
+  white-space: nowrap;
+}
+.node rect, .node circle, .node ellipse {
+  stroke: #333;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+.cluster rect {
+  stroke: #333;
+  fill: #000;
+  fill-opacity: 0.1;
+  stroke-width: 1.5px;
+}
+.edgePath path.path {
+  stroke: #333;
+  stroke-width: 1.5px;
+  fill: none;
+}
+h1, h2 {
+  color: #333;
+}
+textarea {
+  width: 800px;
+}
+label {
+  margin-top: 1em;
+  display: block;
+}
+.error {
+  color: red;
+}
+    </style>
+  </head>
+
+  <body>
+    <svg><g/></svg>
+    <div id="form">      
+      <label for="graph">Dagre-D3 graph:</label><textarea id="graph" rows="5" style="display: block" onKeyUp="drawGraph()"></textarea>
+      <label for="graphName">Name:</label><input id="graphName"></input>&nbsp;<button onclick="saveGraph()">Save to <i>graph_{name}.png</i></button>
+    </div>    
+    <script>
+var svg = d3.select("svg");
+var inner = d3.select("svg g");
+var zoom = d3.zoom().on("zoom", function() {
+    inner.attr("transform", d3.event.transform);
+});
+svg.call(zoom);
+
+var render = dagreD3.render();
+function drawGraph() {
+  var graph = document.querySelector("#graph").value;
+  var g;
+  try {
+      g = graphlibDot.read(graph);
+  } catch (e) {
+      throw e;
+  }
+
+  d3.select("svg g").call(render, g);  
+}
+function saveGraph() {
+  drawGraph();
+  svg.call(zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1));
+
+  var graphName = document.querySelector("#graphName").value;
+  saveSvgAsPng(document.getElementsByTagName("g")[0], "graph_" + graphName + ".png");
+}
+    </script>
+  </body>
+</html>
