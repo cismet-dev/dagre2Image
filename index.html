@@ -86,7 +86,8 @@ function drawGraph() {
   } catch (e) {
       throw e;
   }
-
+  g.graph().marginx = 20;
+  g.graph().marginy = 20;
   d3.select("svg g").call(render, g);  
 }
 function saveGraph() {
